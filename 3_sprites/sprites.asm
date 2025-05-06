@@ -1,3 +1,9 @@
+;*******************************************************************************
+; First enable some fasm68k compatibility settings
+;*******************************************************************************
+
+	m68k.enable compat_operators
+
 ;==============================================================
 ; SEGA MEGA DRIVE/GENESIS - DEMO 3 - SPRITES SAMPLE
 ;==============================================================
@@ -240,19 +246,19 @@ sprite_2_move_speed_y	equ 0x0
 ;==============================================================
 	
 ; Set the VRAM (video RAM) address to write to next
-SetVRAMWrite: macro addr
-	move.l  #(vdp_cmd_vram_write)|((\addr)&$3FFF)<<16|(\addr)>>14, vdp_control
-	endm
+macro SetVRAMWrite addr
+	move.l  #(vdp_cmd_vram_write)|((addr)&$3FFF)<<16|(addr)>>14, vdp_control
+end macro
 	
 ; Set the CRAM (colour RAM) address to write to next
-SetCRAMWrite: macro addr
-	move.l  #(vdp_cmd_cram_write)|((\addr)&$3FFF)<<16|(\addr)>>14, vdp_control
-	endm
+macro SetCRAMWrite addr
+	move.l  #(vdp_cmd_cram_write)|((addr)&$3FFF)<<16|(addr)>>14, vdp_control
+end macro
 
 ; Set the VSRAM (vertical scroll RAM) address to write to next
-SetVSRAMWrite: macro addr
-	move.l  #(vdp_cmd_vsram_write)|((\addr)&$3FFF)<<16|(\addr)>>14, vdp_control
-	endm
+macro SetVSRAMWrite addr
+	move.l  #(vdp_cmd_vsram_write)|((addr)&$3FFF)<<16|(addr)>>14, vdp_control
+end macro
 
 ;==============================================================
 ; SPRITE ATTRIBUTE MACRO
@@ -280,25 +286,25 @@ SetVSRAMWrite: macro addr
 ;==============================================================
 
 ; Writes a sprite attribute structure to 4 registers, ready to write to VRAM
-BuildSpriteStructure: macro x_pos,	; X pos on sprite plane
-	y_pos,							; Y pos on sprite plane
-	dimension_bits,					; Sprite tile dimensions (4 bits)
-	next_id,						; Next sprite index in linked list
-	priority_bit,					; Draw priority
-	palette_id,						; Palette index
-	flip_x,							; Flip horizontally
-	flip_y,							; Flip vertically
-	tile_id,						; First tile index
-	reg1,							; Output: reg1
-	reg2,							; Output: reg2
-	reg3,							; Output: reg3
+macro BuildSpriteStructure x_pos, \	; X pos on sprite plane
+	y_pos, \						; Y pos on sprite plane
+	dimension_bits, \				; Sprite tile dimensions (4 bits)
+	next_id, \						; Next sprite index in linked list
+	priority_bit, \					; Draw priority
+	palette_id, \					; Palette index
+	flip_x, \						; Flip horizontally
+	flip_y, \						; Flip vertically
+	tile_id, \						; First tile index
+	reg1, \							; Output: reg1
+	reg2, \							; Output: reg2
+	reg3, \							; Output: reg3
 	reg4							; Output: reg4
 
-	move.w #y_pos, \reg1
-	move.w #(\dimension_bits<<8|\next_id), \reg2
-	move.w #(\priority_bit<<14|\palette_id<<13|\flip_x<<11|\flip_y<<10|\tile_id), \reg3
-	move.w #x_pos, \reg4
-	endm
+	move.w #y_pos, reg1
+	move.w #(dimension_bits<<8|next_id), reg2
+	move.w #(priority_bit<<14|palette_id<<13|flip_x<<11|flip_y<<10|tile_id), reg3
+	move.w #x_pos, reg4
+end macro
 
 ;==============================================================
 ; MEMORY MAP
@@ -522,7 +528,7 @@ CPU_EntryPoint:
 	; Flip X:     0
 	; Flip Y:     0
 	; Tile id:    tile_id_sprite_1
-	BuildSpriteStructure sprite_1_start_pos_x,sprite_1_start_pos_y,%0101,0x1,0x0,0x0,0x0,0x0,tile_id_sprite_1,d0,d1,d2,d3
+	BuildSpriteStructure sprite_1_start_pos_x,sprite_1_start_pos_y,0101b,0x1,0x0,0x0,0x0,0x0,tile_id_sprite_1,d0,d1,d2,d3
 
 	; Write the entire sprite attribute structure to the sprite table
 	move.w d0, vdp_data
@@ -541,7 +547,7 @@ CPU_EntryPoint:
 	; Flip X:     0
 	; Flip Y:     0
 	; Tile id:    tile_id_sprite_2
-	BuildSpriteStructure sprite_2_start_pos_x,sprite_2_start_pos_y,%1110,0x0,0x0,0x1,0x0,0x0,tile_id_sprite_2,d0,d1,d2,d3
+	BuildSpriteStructure sprite_2_start_pos_x,sprite_2_start_pos_y,1110b,0x0,0x0,0x1,0x0,0x0,tile_id_sprite_2,d0,d1,d2,d3
 
 	; Write the entire sprite attribute structure to the sprite table
 	move.w d0, vdp_data

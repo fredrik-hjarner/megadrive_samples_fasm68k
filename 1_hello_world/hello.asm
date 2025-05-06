@@ -1,3 +1,9 @@
+;*******************************************************************************
+; First enable some fasm68k compatibility settings
+;*******************************************************************************
+
+	m68k.enable compat_operators
+
 ;==============================================================
 ; SEGA MEGA DRIVE/GENESIS - DEMO 1 - HELLO WORLD SAMPLE
 ;==============================================================
@@ -239,14 +245,14 @@ text_pos_y				equ 0x04
 ;==============================================================
 	
 ; Set the VRAM (video RAM) address to write to next
-SetVRAMWrite: macro addr
-	move.l  #(vdp_cmd_vram_write)|((\addr)&$3FFF)<<16|(\addr)>>14, vdp_control
-	endm
+macro SetVRAMWrite addr
+	move.l  #(vdp_cmd_vram_write)|((addr)&$3FFF)<<16|(addr)>>14, vdp_control
+end macro
 	
 ; Set the CRAM (colour RAM) address to write to next
-SetCRAMWrite: macro addr
-	move.l  #(vdp_cmd_cram_write)|((\addr)&$3FFF)<<16|(\addr)>>14, vdp_control
-	endm
+macro SetCRAMWrite addr
+	move.l  #(vdp_cmd_cram_write)|((addr)&$3FFF)<<16|(addr)>>14, vdp_control
+end macro
 	
 ;==============================================================
 ; PALETTE

@@ -1,3 +1,9 @@
+;*******************************************************************************
+; First enable some fasm68k compatibility settings
+;*******************************************************************************
+
+	m68k.enable compat_operators
+
 ;==============================================================
 ; SEGA MEGA DRIVE/GENESIS - DEMO 6 - PSG TONE SAMPLE
 ;==============================================================
@@ -296,19 +302,19 @@ initial_psg_freq		equ 0xFE ; (440hz)
 ;==============================================================
 
 ; Set the VRAM (video RAM) address to write to next
-SetVRAMWrite: macro addr
-	move.l  #(vdp_cmd_vram_write)|((\addr)&$3FFF)<<16|(\addr)>>14, vdp_control
-	endm
+macro SetVRAMWrite addr
+	move.l  #(vdp_cmd_vram_write)|((addr)&$3FFF)<<16|(addr)>>14, vdp_control
+end macro
 
 ; Set the CRAM (colour RAM) address to write to next
-SetCRAMWrite: macro addr
-	move.l  #(vdp_cmd_cram_write)|((\addr)&$3FFF)<<16|(\addr)>>14, vdp_control
-	endm
+macro SetCRAMWrite addr
+	move.l  #(vdp_cmd_cram_write)|((addr)&$3FFF)<<16|(addr)>>14, vdp_control
+end macro
 
 ; Set the VSRAM (vertical scroll RAM) address to write to next
-SetVSRAMWrite: macro addr
-	move.l  #(vdp_cmd_vsram_write)|((\addr)&$3FFF)<<16|(\addr)>>14, vdp_control
-	endm
+macro SetVSRAMWrite addr
+	move.l  #(vdp_cmd_vsram_write)|((addr)&$3FFF)<<16|(addr)>>14, vdp_control
+end macro
 
 ;==============================================================
 ; MEMORY MAP
@@ -440,7 +446,7 @@ INT_VInterrupt:
 	btst   #pad_button_up, d0
 	beq    @NoUp
 	addi.w #0x1, d1
-	cmp.b  #0x0F, d1
+	cmpi.b  #0x0F, d1
 	ble    @NoClampUp
 	move.b #0x0F, d1
 	@NoClampUp:
@@ -450,7 +456,7 @@ INT_VInterrupt:
 	btst   #pad_button_down, d0
 	beq    @NoDown
 	subi.w #0x1, d1
-	cmp.b  #0x0, d1
+	cmpi.b  #0x0, d1
 	bge    @NoClampDown
 	move.b #0x0, d1
 	@NoClampDown:
